@@ -12,5 +12,10 @@
     "Elasticsearch"
   ],
   "author": "Pedro Flores",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "js-base64": "^2.4.0",
+    "request-promise": "^4.2.2"
+  }
 }
