@@ -8,9 +8,9 @@ To clone and run this repository you'll need [Git](https://git-scm.com) and [Nod
 
 ```bash
 # Clone this repository
-git clone git@devapp.dncp.gov.py:reingenieria/mudoc.git
+git clone https://github.com/neowinx/vadoma.git
 # Go into the repository
-cd mudoc
+cd vadoma
 # Install dependencies
 npm install
 # Edit settings in **config.json**
