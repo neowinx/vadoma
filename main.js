@@ -1,11 +1,16 @@
 const config = require('./config');
-const rp = require('request-promise');
+const requestPromise = require('request-promise');
 const base64 = require('js-base64').Base64;
 const chalk = require('chalk');
 
-const sharepointAuth = base64.encode(`${config.sharepoint.username}:${config.sharepoint.password}`);
-const elasticAuth = base64.encode(`${config.elastic.username}:${config.elastic.password}`);
-const elasticUrl = `${config.elastic.url}/${config.elastic.index}/${config.elastic.type}`;
+const sharepointHeader = {
+    'Authorization': `Basic ${base64.encode(`${config.sharepoint.username}:${config.sharepoint.password}`)}`,
+    'Accept': 'application/json;odata=verbose'
+};
+
+const elasticHeader = {
+    'Authorization': `Basic ${base64.encode(`${config.elastic.username}:${config.elastic.password}`)}`
+};
 
 async function processData(url) {
     if(!url) {
@@ -15,21 +20,16 @@ async function processData(url) {
 
     try {
 
-        let body = await rp({
+        let body = await requestPromise({
             url: url, 
-            headers: {
-                'Authorization': `Basic ${sharepointAuth}`,
-                'Accept': 'application/json;odata=verbose'
-            },
+            headers: sharepointHeader,
             json: true
         });
 
-        rp({
-            url: elasticUrl,
+        requestPromise({
+            url: config.elastic.url,
             method: 'POST',
-            headers: {
-                'Authorization': `Basic ${elasticAuth}`
-            },
+            headers: elasticHeader,
             json: true,
             body: body
         });
