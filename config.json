@@ -1,0 +1,6 @@
+{
+  "siteUrl" : "http://sharepoint.example.org:8081",
+  "username" : "user@example.org",
+  "password" : "Password@example.org",
+  "list" : "MyList"
+}
