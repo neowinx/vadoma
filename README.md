@@ -19,6 +19,34 @@ nano config.json
 npm start
 ```
 
+## Configuration
+
+The config.json is (as you may have guessed) a straightforward json file with this content:
+
+```json
+{
+  "sharepoint" : {
+    "url" : "http://sharepoint.example.org:8080",
+    "username" : "sharepoint@example.org",
+    "password" : "Password@Example.org",
+    "list" : "MyList"
+  },
+  "elastic" : {
+    "url" : "http://localhost:9200/myindex/doc",
+    "username" : "elastic",
+    "password" : "changeme"
+  }
+}
+```
+
+- **sharepoint.url** : The url of the endpoint of your sharepoint api
+- **sharepoint.username** : The username for basic authentication on your sharepoint
+- **sharepoint.password** : The password for basic authentication on your sharepoint
+- **sharepoint.list** : The name of the sharepoint list you want to import
+- **elastic.url** : The url of your elasticsearch endpoint to use for the import (must include the index and type)
+- **elastic.username** : The username of your elasticsearch for authentication
+- **elastic.password** : The password of your elasticsearch for authentication
+
 ## License
 
 [CC0 1.0 (Public Domain)](LICENSE.md)
