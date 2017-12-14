@@ -9,6 +9,7 @@
     "url" : "http://localhost:9200",
     "username" : "elastic",
     "password" : "changeme",
-    "index" : "myindex"
+    "index" : "myindex",
+    "type" : "doc"
   }
 }
