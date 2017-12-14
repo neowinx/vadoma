@@ -6,10 +6,8 @@
     "list" : "MyList"
   },
   "elastic" : {
-    "url" : "http://localhost:9200",
+    "url" : "http://localhost:9200/myindex/doc",
     "username" : "elastic",
-    "password" : "changeme",
-    "index" : "myindex",
-    "type" : "doc"
+    "password" : "changeme"
   }
 }
