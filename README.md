@@ -47,6 +47,20 @@ The config.json is (as you may have guessed) a straightforward json file with th
 - **elastic.username** : The username of your elasticsearch for authentication
 - **elastic.password** : The password of your elasticsearch for authentication
 
+## FAQ
+
+### Why you have created this?
+
+I could not find a suitable logstash plugin to do this and it was easier for me to create something like this
+
+### WTF Vadoma means?
+
+Supposedly *Vadoma* was in the common gypsy names list, so I found adequate to name something that serves to migrate stuff with a gypsy name
+
+### I dont like this, its ugly, inefficient and it is not programmed in my super awesome language because blablabla...
+
+Just don't use it... and let others live
+
 ## License
 
 [CC0 1.0 (Public Domain)](LICENSE.md)
