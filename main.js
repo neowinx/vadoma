@@ -6,7 +6,7 @@ const chalk = require('chalk');
 async function processData(url) {
     if(!url) {
         url = `${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items`
-        console.log(`processing page ${chalk.yellow(url)}`);
+        console.log(`Processing page ${chalk.yellow(url)}`);
     }
 
     try {
@@ -20,11 +20,7 @@ async function processData(url) {
             json: true
         });
 
-        let elasticUrl = `${config.elastic.url}/${config.elastic.index}/${config.elastic.type}`
-
-        console.log(`sending response to ${chalk.yellow(elasticUrl)}`);
-
-        await rp({
+        rp({
             url: `${config.elastic.url}/${config.elastic.index}/${config.elastic.type}`,
             method: 'POST',
             headers: {
@@ -35,7 +31,7 @@ async function processData(url) {
         });
 
         if(body && body.d && body.d.__next) {
-            let nextUrl = body.d.__next
+            let nextUrl = body.d.__next;
             console.log(`processing next page ${chalk.yellow(nextUrl)}`);
             processData(nextUrl);
         }
@@ -45,7 +41,9 @@ async function processData(url) {
     }
 }
 
-console.log(`Welcome to ${chalk.green('Vadoma')}`);
+console.log(`Welcome to ${chalk.cyan('Vadoma')}`);
 console.log('Starting the import process...');
 
 processData();
+
+console.log(`Process finished. Have a nice day ${chalk.green(':D')}`);
