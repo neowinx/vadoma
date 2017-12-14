@@ -3,6 +3,10 @@ const rp = require('request-promise');
 const base64 = require('js-base64').Base64;
 const chalk = require('chalk');
 
+const sharepointAuth = base64.encode(`${config.sharepoint.username}:${config.sharepoint.password}`);
+const elasticAuth = base64.encode(`${config.elastic.username}:${config.elastic.password}`);
+const elasticUrl = `${config.elastic.url}/${config.elastic.index}/${config.elastic.type}`;
+
 async function processData(url) {
     if(!url) {
         url = `${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items`
@@ -14,17 +18,17 @@ async function processData(url) {
         let body = await rp({
             url: url, 
             headers: {
-                'Authorization': `Basic ${base64.encode(`${config.sharepoint.username}:${config.sharepoint.password}`)}`,
+                'Authorization': `Basic ${sharepointAuth}`,
                 'Accept': 'application/json;odata=verbose'
             },
             json: true
         });
 
         rp({
-            url: `${config.elastic.url}/${config.elastic.index}/${config.elastic.type}`,
+            url: elasticUrl,
             method: 'POST',
             headers: {
-                'Authorization': `Basic ${base64.encode(`${config.elastic.username}:${config.elastic.password}`)}`
+                'Authorization': `Basic ${elasticAuth}`
             },
             json: true,
             body: body
@@ -45,5 +49,3 @@ console.log(`Welcome to ${chalk.cyan('Vadoma')}`);
 console.log('Starting the import process...');
 
 processData();
-
-console.log(`Process finished. Have a nice day ${chalk.green(':D')}`);
