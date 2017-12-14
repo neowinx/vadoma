@@ -19,9 +19,11 @@ nano config.json
 npm start
 ```
 
+And it will start the import right away (**I mean it**, it will start as soon as you press enter... ok?... ok)
+
 ## Configuration
 
-The config.json is (as you may have guessed) a straightforward json file with this content:
+The _config.json_ is (as you may have guessed) a straightforward json file with this content:
 
 ```json
 {
@@ -51,13 +53,13 @@ The config.json is (as you may have guessed) a straightforward json file with th
 
 ### Why you have created this?
 
-I could not find a suitable logstash plugin to do this and it was easier for me to create something like this
+I couldn't find a suitable logstash plugin to do the import of and entire list from _Sharepoint_ to _Elasticsearch_ and it was easier for me to create something like this
 
 ### WTF Vadoma means?
 
 Supposedly *Vadoma* was in the common gypsy names list, so I found adequate to name something that serves to migrate stuff with a gypsy name
 
-### I dont like this, its ugly, inefficient and it is not programmed in my super awesome language because blablabla...
+### I dont like this it is ugly, inefficient and it is not programmed in my super awesome language because blablabla...
 
 Just don't use it... and let others live
 
