@@ -69,8 +69,9 @@ Every configuration has its corresponding environment variable override. It foll
 
 So the list of variables that replaces its corresponding configuration is:
 
-| SHAREPOINT_URL      	| sharepoint.url      	|
+| Environment Variable 	| Configuration        	|
 |---------------------	|---------------------	|
+| SHAREPOINT_URL      	| sharepoint.url      	|
 | SHAREPOINT_USERNAME 	| sharepoint.username 	|
 | SHAREPOINT_PASSWORD 	| sharepoint.password 	|
 | SHAREPOINT_LIST     	| sharepoint.list     	|
