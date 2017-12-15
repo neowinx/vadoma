@@ -63,6 +63,22 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
 - **stash.field** : Used for the `stash` mode. The Datetime field used to check for new items in the list
 - **stash.timeout** : Used for the `stash` mode. The time used for the interval to check for new items in the list
 
+### Environment variables
+
+Every configuration has its corresponding environment variable override. It follows the format where every word has been upercased and the dots replaced by underscores i.e.: my.config <==> MY_CONFIG.
+
+So the list of varibles that replaces its corresponding configuration is:
+
+- SHAREPOINT_URL <==> sharepoint.url
+- SHAREPOINT_USERNAME <==> sharepoint.username
+- SHAREPOINT_PASSWORD <==> sharepoint.password
+- SHAREPOINT_LIST <==> sharepoint.list
+- ELASTIC_URL <==> elastic.url
+- ELASTIC_USERNAME <==> elastic.username
+- ELASTIC_PASSWORD <==> elastic.password
+- STASH_FIELD <==> stash.field
+- STASH_TIMEOUT <==> stash.timeout
+
 ## FAQ
 
 ### Why you have created this?

@@ -1,4 +1,8 @@
-const config = require('./config');
+const pristineConfig = require('./config');
+const overrides = require('./overrides');
+
+const config = overrides(pristineConfig);
+
 const requestPromise = require('request-promise');
 const base64 = require('js-base64').Base64;
 const chalk = require('chalk');
