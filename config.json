@@ -9,5 +9,9 @@
     "url" : "http://localhost:9200/myindex/doc",
     "username" : "elastic",
     "password" : "changeme"
+  },
+  "stash" : {
+    "field" : "Created",
+    "timeout" : 15000
   }
 }

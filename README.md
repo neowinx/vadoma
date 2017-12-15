@@ -21,6 +21,14 @@ npm start
 
 And it will start the import right away (**I mean it**, it will start as soon as you press enter... ok?... ok)
 
+## `Stash` mode
+
+`Vadoma` can also check periodically for new items in the list. To do so, just especify in the corresponding configuration a datetime field used to check for new items comparing the current date and then start `vadoma` in `stash` mode:
+
+```bash
+npm start stash
+```
+
 ## Configuration
 
 The _config.json_ is (as you may have guessed) a straightforward json file with this content:
@@ -37,6 +45,10 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
     "url" : "http://localhost:9200/myindex/doc",
     "username" : "elastic",
     "password" : "changeme"
+  },
+  "stash" : {
+    "field" : "Created",
+    "timeout" : 15000
   }
 }
 ```
@@ -48,6 +60,8 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
 - **elastic.url** : The url of your elasticsearch endpoint to use for the import (must include the index and type)
 - **elastic.username** : The username of your elasticsearch for authentication
 - **elastic.password** : The password of your elasticsearch for authentication
+- **stash.field** : Used for the `stash` mode. The Datetime field used to check for new items in the list
+- **stash.timeout** : Used for the `stash` mode. The time used for the interval to check for new items in the list
 
 ## FAQ
 
