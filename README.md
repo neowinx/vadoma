@@ -67,7 +67,7 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
 
 Every configuration has its corresponding environment variable override. It follows the format where every word has been upercased and the dots replaced by underscores i.e.: my.config <==> MY_CONFIG.
 
-So the list of varibles that replaces its corresponding configuration is:
+So the list of variables that replaces its corresponding configuration is:
 
 - SHAREPOINT_URL <==> sharepoint.url
 - SHAREPOINT_USERNAME <==> sharepoint.username
