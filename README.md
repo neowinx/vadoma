@@ -69,15 +69,16 @@ Every configuration has its corresponding environment variable override. It foll
 
 So the list of variables that replaces its corresponding configuration is:
 
-- SHAREPOINT_URL <==> sharepoint.url
-- SHAREPOINT_USERNAME <==> sharepoint.username
-- SHAREPOINT_PASSWORD <==> sharepoint.password
-- SHAREPOINT_LIST <==> sharepoint.list
-- ELASTIC_URL <==> elastic.url
-- ELASTIC_USERNAME <==> elastic.username
-- ELASTIC_PASSWORD <==> elastic.password
-- STASH_FIELD <==> stash.field
-- STASH_TIMEOUT <==> stash.timeout
+| SHAREPOINT_URL      	| sharepoint.url      	|
+|---------------------	|---------------------	|
+| SHAREPOINT_USERNAME 	| sharepoint.username 	|
+| SHAREPOINT_PASSWORD 	| sharepoint.password 	|
+| SHAREPOINT_LIST     	| sharepoint.list     	|
+| ELASTIC_URL         	| elastic.url         	|
+| ELASTIC_USERNAME    	| elastic.username    	|
+| ELASTIC_PASSWORD    	| elastic.password    	|
+| STASH_FIELD         	| stash.field         	|
+| STASH_TIMEOUT       	| stash.timeout       	|
 
 ## FAQ
 
