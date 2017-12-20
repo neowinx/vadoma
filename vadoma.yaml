@@ -1,0 +1,190 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: vadoma
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: vadoma
+  spec:
+    failedBuildsHistoryLimit: 5
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: vadoma:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        uri: https://github.com/neowinx/vadoma.git
+      type: Git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: nodejs-8-centos7:latest
+      type: Source
+    successfulBuildsHistoryLimit: 5
+    triggers:
+    - github:
+        secret: pNemFWqgr2y6IRHxsuQ7
+      type: GitHub
+    - generic:
+        secret: IhBDddniWiLVYlDkA0z4
+      type: Generic
+    - type: ConfigChange
+    - imageChange: {}
+      type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: vadoma
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deploymentconfig: vadoma
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: nodejs-8-centos7
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+      from:
+        kind: DockerImage
+        name: centos/nodejs-8-centos7:latest
+      generation: 2
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: vadoma
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations: null
+      generation: null
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: ""
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    labels:
+      app: vadoma
+    name: vadoma
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      app: vadoma
+      deploymentconfig: vadoma
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: vadoma
+          deploymentconfig: vadoma
+      spec:
+        containers:
+        - env:
+          - name: SHAREPOINT_URL
+            value: ${SHAREPOINT_URL}
+          - name: SHAREPOINT_USERNAME
+            value: ${SHAREPOINT_USERNAME}
+          - name: SHAREPOINT_PASSWORD
+            value: ${SHAREPOINT_PASSWORD}
+          - name: SHAREPOINT_LIST
+            value: ${SHAREPOINT_LIST}
+          - name: ELASTIC_URL
+            value: ${ELASTIC_URL}
+          - name: ELASTIC_USERNAME
+            value: ${ELASTIC_USERNAME}
+          - name: ELASTIC_PASSWORD
+            value: ${ELASTIC_PASSWORD}
+          - name: STASH_FIELD
+            value: ${STASH_FIELD}
+          - name: STASH_TIMEOUT
+            value: ${STASH_TIMEOUT}
+          - name: NPM_RUN
+            value: start stash
+          imagePullPolicy: Always
+          name: vadoma
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - vadoma
+        from:
+          kind: ImageStreamTag
+          name: vadoma:latest
+      type: ImageChange
+parameters:
+- name: SHAREPOINT_URL
+  value: 'http://sharepoint.example.org:8080'
+  description: 'The url of the endpoint of your sharepoint api'
+- name: SHAREPOINT_USERNAME
+  value: 'sharepoint@example.org'
+  description: 'The username for basic authentication on your sharepoint'
+- name: SHAREPOINT_PASSWORD
+  value: 'Password@Example.org'
+  description: 'The password for basic authentication on your sharepoint'
+- name: SHAREPOINT_LIST
+  value: 'MyList'
+  description: 'The name of the sharepoint list you want to import'
+- name: ELASTIC_URL
+  value: 'http://localhost:9200/myindex/doc'
+  description: 'The url of your elasticsearch endpoint to use for the import (must include the index and type)'
+- name: ELASTIC_USERNAME
+  value: 'elastic'
+  description: 'The username of your elasticsearch for authentication'
+- name: ELASTIC_PASSWORD
+  value: 'changeme'
+  description: 'The password of your elasticsearch for authentication'
+- name: STASH_FIELD
+  value: 'Created'
+  description: 'Used for the stash mode. The Datetime field used to check for new items in the list'
+- name: STASH_TIMEOUT
+  value: '15000'
+  description: 'Used for the stash mode. The time used for the interval to check for new items in the list'
