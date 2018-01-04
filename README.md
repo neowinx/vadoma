@@ -8,15 +8,15 @@ To clone and run this repository you'll need [Git](https://git-scm.com) and [Nod
 
 ```bash
 # Clone this repository
-git clone https://github.com/neowinx/vadoma.git
+$ git clone https://github.com/neowinx/vadoma.git
 # Go into the repository
-cd vadoma
+$ cd vadoma
 # Install dependencies
-npm install
+$ npm install
 # Edit settings in **config.json**
-nano config.json
+$ nano config.json
 # Run the app
-npm start
+$ npm start
 ```
 
 And it will start the import right away (**I mean it**, it will start as soon as you press enter... ok?... ok)
@@ -26,7 +26,50 @@ And it will start the import right away (**I mean it**, it will start as soon as
 `Vadoma` can also check periodically for new items in the list. To do so, just especify in the corresponding configuration a datetime field used to check for new items comparing the current date and then start `vadoma` in `stash` mode:
 
 ```bash
-npm start stash
+$ npm start stash
+```
+
+## Docker
+
+There is a image created for use this repo with docker. You can use it like this:
+
+```bash
+$ docker run -ti -e SHAREPOINT_LIST=MyList -e SHAREPOINT_URL=http://my.sharepoint.net -e SHAREPOINT_USER=user@my.sharepoint.net -e SHAREPOINT_PASSWORD=My@pass -e ELASTIC_URL=http://localhost:9200 -e ELASTIC_USERNAME=elastic -e ELASTIC_PASSWORD=changeme vadoma
+```
+
+for `stash` mode:
+
+```bash
+$ docker run -ti -e SHAREPOINT_LIST=MyList -e SHAREPOINT_URL=http://my.sharepoint.net -e SHAREPOINT_USER=user@my.sharepoint.net -e SHAREPOINT_PASSWORD=My@pass -e ELASTIC_URL=http://localhost:9200 -e ELASTIC_USERNAME=elastic -e ELASTIC_PASSWORD=changeme vadoma npm start stash
+```
+
+### Docker Build
+
+To build a your own image, you can use the `Dockerfile` included in this repo using the docker build command:
+
+```bash
+$ docker build -t my-vadoma .
+```
+
+An then you can use the generated image like this:
+
+```bash
+$ docker run -ti my-vadoma
+```
+
+and for `stash` mode:
+
+```bash
+$ docker run -ti my-vadoma npm start stash
+```
+
+## Openshift
+
+Vadoma incudes a Openshift template. To create the template inside your Openshift, you can do something like this:
+
+```bash
+$ oc login -u system:admin
+$ oc create -f vadoma.yml
 ```
 
 ## Configuration
