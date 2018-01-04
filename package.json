@@ -3,6 +3,10 @@
   "version": "1.0.1",
   "description": "Vadoma, a simple node app to import lists from Sharepoint (versions around 2013) to Elasticsearch (versions around 6.0.x)",
   "main": "main.js",
+  "repository": {
+    "url": "https://github.com/neowinx/vadoma.git",
+    "type": "git"
+  },
   "scripts": {
     "start": "node --max_old_space_size=8096 main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
