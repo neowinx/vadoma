@@ -31,7 +31,7 @@ $ npm start stash
 
 ## Docker
 
-There is a image created for use this repo with docker. You can use it like this:
+There is an image created for vadoma with docker. You can use it like this:
 
 ```bash
 $ docker run -ti -e SHAREPOINT_LIST=MyList -e SHAREPOINT_URL=http://my.sharepoint.net -e SHAREPOINT_USER=user@my.sharepoint.net -e SHAREPOINT_PASSWORD=My@pass -e ELASTIC_URL=http://localhost:9200 -e ELASTIC_USERNAME=elastic -e ELASTIC_PASSWORD=changeme neowinx/vadoma
@@ -71,6 +71,8 @@ Vadoma incudes a Openshift template. To create the template inside your Openshif
 $ oc login -u system:admin
 $ oc create -f vadoma.yml
 ```
+
+![Vadoma Template on Openshift](doc/images/openshift.gif)
 
 ## Configuration
 
