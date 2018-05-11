@@ -1,6 +1,6 @@
 {
   "name": "vadoma",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Vadoma, a simple node app to import lists from Sharepoint (versions around 2013) to Elasticsearch (versions around 6.0.x)",
   "main": "main.js",
   "repository": {
