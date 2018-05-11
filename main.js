@@ -72,7 +72,10 @@ if(process && process.argv && process.argv.length > 0 && process.argv.slice(2).i
     console.log(`Consulting for new data in ${config.sharepoint.list} list every ${chalk.cyan(config.stash.timeout)} milliseconds...`);
     let d = new Date();
     setInterval(function() {
-        processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${config.stash.field}+ge+datetime'${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00Z'`);
+        config.stash.fields.split(",").forEach(field => {
+            let formattedDate = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00Z`;
+            processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${field}+ge+datetime'${formattedDate}'`);
+        });
     },  config.stash.timeout);
 } else {
     processData();

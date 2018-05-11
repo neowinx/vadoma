@@ -11,7 +11,7 @@
     "password" : "changeme"
   },
   "stash" : {
-    "field" : "Created",
+    "fields" : "Created,Modified",
     "timeout" : 15000
   }
 }

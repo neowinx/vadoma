@@ -92,7 +92,7 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
     "password" : "changeme"
   },
   "stash" : {
-    "field" : "Created",
+    "fields" : "Created,Modified",
     "timeout" : 15000
   }
 }
@@ -105,7 +105,7 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
 - **elastic.url** : The url of your elasticsearch endpoint to use for the import (must include the index and type)
 - **elastic.username** : The username of your elasticsearch for authentication
 - **elastic.password** : The password of your elasticsearch for authentication
-- **stash.field** : Used for the `stash` mode. The Datetime field used to check for new items in the list
+- **stash.fields** : Used for the `stash` mode. The Datetime fields separated by commas used to check for new items in the list
 - **stash.timeout** : Used for the `stash` mode. The time used for the interval to check for new items in the list
 
 ### Environment variables
@@ -123,7 +123,7 @@ So the list of variables that replaces its corresponding configuration is:
 | ELASTIC_URL         	| elastic.url         	|
 | ELASTIC_USERNAME    	| elastic.username    	|
 | ELASTIC_PASSWORD    	| elastic.password    	|
-| STASH_FIELD         	| stash.field         	|
+| STASH_FIELDS         	| stash.fields        	|
 | STASH_TIMEOUT       	| stash.timeout       	|
 
 ## FAQ

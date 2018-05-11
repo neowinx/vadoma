@@ -12,7 +12,7 @@ let overrides = function(config) {
             "password" : process.env.ELASTIC_PASSWORD || config.elastic.password
           },
           "stash" : {
-            "field" : process.env.STASH_FIELD || config.stash.field,
+            "fields" : process.env.STASH_FIELDS || config.stash.fields,
             "timeout" : process.env.STASH_TIMEOUT || config.stash.timeout
           }
     };
