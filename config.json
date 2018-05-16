@@ -6,12 +6,43 @@
     "list" : "MyList"
   },
   "elastic" : {
-    "url" : "http://localhost:9200/myindex/doc",
+    "url" : "http://localhost:9200",
+    "index": "myindex",
     "username" : "elastic",
     "password" : "changeme"
   },
   "stash" : {
     "fields" : "Created,Modified",
     "timeout" : 15000
+  },
+  "mappingData" : {
+    "properties": {
+      "Descripcion": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          },
+          "folded": {
+            "type": "text",
+            "analyzer": "folding"
+          }
+        }
+      },
+      "Titulo":  {
+        "type": "text",
+        "fields":  {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          },
+          "folded": {
+            "type": "text",
+            "analyzer": "folding"
+          }
+        }
+      }
+    }
   }
 }

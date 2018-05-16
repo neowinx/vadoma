@@ -8,13 +8,15 @@ let overrides = function(config) {
           },
           "elastic" : {
             "url" : process.env.ELASTIC_URL || config.elastic.url,
+            "index": process.env.ELASTIC_INDEX_ || config.elastic.index,
             "username" : process.env.ELASTIC_USERNAME || config.elastic.username,
             "password" : process.env.ELASTIC_PASSWORD || config.elastic.password
           },
           "stash" : {
             "fields" : process.env.STASH_FIELDS || config.stash.fields,
             "timeout" : process.env.STASH_TIMEOUT || config.stash.timeout
-          }
+          },
+          "mappingData" : process.env.MAPPING_DATA || config.mappingData
     };
 }
 

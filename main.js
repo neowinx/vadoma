@@ -8,6 +8,8 @@ const moment = require('moment');
 const base64 = require('js-base64').Base64;
 const chalk = require('chalk');
 
+const stashMode = process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("stash");
+
 const sharepointHeader = {
     'Authorization': `Basic ${base64.encode(`${config.sharepoint.username}:${config.sharepoint.password}`)}`,
     'Accept': 'application/json;odata=verbose'
@@ -17,7 +19,7 @@ const elasticHeader = {
     'Authorization': `Basic ${base64.encode(`${config.elastic.username}:${config.elastic.password}`)}`
 };
 
-async function processData(url) {
+async function processData(url, fieldsData) {
     if(!url) {
         url = `${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items`
     }
@@ -39,12 +41,33 @@ async function processData(url) {
                 });
             }
 
+            // Elasticsearch doesn't get along wiht Array data, so the results are splitted and sended using the _bulk API
+
+            var bulkData = '';
+
+            body.d.results.forEach(result => {
+                bulkData += `{ "index" : { } }\n`;
+                bulkData += `${JSON.stringify(result)}\n`; 
+            });
+
+            bulkData;
+
             requestPromise({
-                url: config.elastic.url,
+                url: `${config.elastic.url}/${config.elastic.index}/doc/_bulk`,
                 method: 'POST',
-                headers: elasticHeader,
-                json: true,
-                body: body
+                headers: { 'Authorization': elasticHeader['Authorization'], 'Content-type' : 'application/x-ndjson' },
+                body: bulkData
+            }).then( () => {
+                // If the request was successful and we are in stash mode, get the new lastDate of every config.stash.field
+                if(stashMode) {
+                    body.d.results.forEach(result => {
+                        fieldsData.forEach(data => {
+                            if(moment(data.lastDate).isBefore(moment(result[data.field]))) {
+                                data.lastDate = result[data.field];
+                            }
+                        });
+                    });
+                }
             });
     
             if(body.d.__next) {
@@ -68,16 +91,63 @@ function pad(number) {
 console.log(`Welcome to ${chalk.cyan('Vadoma')}`);
 console.log('Starting the import process...');
 
-if(process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("stash")) {
-    console.log(`Entering ${chalk.yellow('stash')} mode.`);
-    console.log(`Consulting for new data in ${config.sharepoint.list} list every ${chalk.cyan(config.stash.timeout)} milliseconds...`);
-    setInterval(function() {
-        config.stash.fields.split(",").forEach(field => {
-            // Sharepoint stores dates in UTC-0 format. It is responsability of the client to do the corresponding local conversion
-            let formattedDate = moment().utc().format();
-            processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${field}+ge+datetime'${formattedDate}'`);
+async function main() {
+    
+    if(process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("recreate")) {
+        console.log(`${chalk.yellow('WARNING:')} Recreating index as per user request. THIS CANNOT BE UNDONE!`);
+        
+        console.log(`${chalk.cyan('Deleting')} index ${chalk.yellow(config.elastic.index)}...`);
+        await requestPromise({
+            method: 'DELETE',
+            url: `${config.elastic.url}/${config.elastic.index}`, 
+            headers: elasticHeader
         });
-    },  config.stash.timeout);
-} else {
-    processData();
+
+        console.log(`${chalk.cyan('Creating')} index ${chalk.yellow(config.elastic.index)}...`);
+        await requestPromise({ method: 'PUT',
+            url: `${config.elastic.url}/${config.elastic.index}`,
+            headers: elasticHeader,
+            body: { settings: { analysis: { analyzer: { folding: { tokenizer: 'standard', filter: [ 'lowercase', 'asciifolding' ] } } } } },
+        json: true });
+
+        if(config.mappingData) {
+            console.log(`Adding ${chalk.cyan('_mapping')} info to ${chalk.yellow('doc')} type from ${chalk.yellow('mappingData')}...`);
+            await requestPromise({ method: 'POST',
+            url: `${config.elastic.url}/${config.elastic.index}/_mapping/doc`,
+            headers: elasticHeader,
+            body: config.mappingData,
+        json: true });
+        }
+    }
+
+    if(stashMode) {
+        console.log(`Entering ${chalk.yellow('stash')} mode.`);
+
+        console.log(`Getting latest index data for ${config.elastic.index} index...`);
+
+        let fieldsData = await Promise.all(config.stash.fields.split(",").map(async fieldName => { 
+            let body = await requestPromise({
+                url: `${config.elastic.url}/${config.elastic.index}/_search`, 
+                headers: elasticHeader,
+                qs: 
+                {
+                    _source_include: `${fieldName}`,
+                    sort: `${fieldName}:desc`
+                },
+                json: true
+            });
+            return { field: fieldName, lastDate: body.hits.hits[0]._source[fieldName] }; 
+        }));
+
+        console.log(`Consulting for new data in ${config.sharepoint.list} list every ${chalk.cyan(config.stash.timeout)} milliseconds...`);
+        setInterval(function() {
+            fieldsData.forEach(data => {
+                processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${data.field}+ge+datetime'${data.lastDate}'`, fieldsData);
+            });
+        },  config.stash.timeout);
+    } else {
+        processData();
+    }
 }
+
+main();
