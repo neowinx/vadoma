@@ -20,6 +20,7 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "js-base64": "^2.4.0",
+    "moment": "^2.22.1",
     "request": "^2.83.0",
     "request-promise": "^4.2.2"
   }
