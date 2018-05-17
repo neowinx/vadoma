@@ -30,7 +30,9 @@ async function processData(url, fieldsData) {
             url: url, 
             headers: sharepointHeader,
             json: true
-        });
+        }).catch(e => { 
+            console.log(`Error requesting results. We will continuing trying though. ${e}`);
+         });
 
         if(body && body.d && body.d.results && body.d.results.length > 0) {
 
@@ -101,6 +103,8 @@ async function main() {
             method: 'DELETE',
             url: `${config.elastic.url}/${config.elastic.index}`, 
             headers: elasticHeader
+        }).catch(e => {
+            console.log(`Error deleting index. It is probably that it doesn't exist in the elastic search repo. Ignoring in the meantime...`);
         });
 
         console.log(`${chalk.cyan('Creating')} index ${chalk.yellow(config.elastic.index)}...`);
