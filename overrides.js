@@ -8,7 +8,7 @@ let overrides = function(config) {
           },
           "elastic" : {
             "url" : process.env.ELASTIC_URL || config.elastic.url,
-            "index": process.env.ELASTIC_INDEX_ || config.elastic.index,
+            "index": process.env.ELASTIC_INDEX || config.elastic.index,
             "username" : process.env.ELASTIC_USERNAME || config.elastic.username,
             "password" : process.env.ELASTIC_PASSWORD || config.elastic.password
           },
