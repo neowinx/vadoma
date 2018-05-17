@@ -139,8 +139,15 @@ async function main() {
                     sort: `${fieldName}:desc`
                 },
                 json: true
+            }).catch(e => {
+                console.log(`Error getting the latest date from field: ${chalk.yellow(fieldName)} for ${chalk.cyan(config.elastic.index)} index. You should probably import some data first?`);
             });
-            return { field: fieldName, lastDate: body.hits.hits[0]._source[fieldName] }; 
+            if(body && body.hits && body.hits.hits) {
+                return { field: fieldName, lastDate: body.hits.hits[0]._source[fieldName] };
+            } else {
+                console.warn(`WARNING: The ${chalk.yellow('lastDate')} will be established with the ${chalk.cyan('current date')}`);
+                return { field: fieldName, lastDate: moment().toISOString() };
+            }
         }));
 
         console.log(`Consulting for new data in ${config.sharepoint.list} list every ${chalk.cyan(config.stash.timeout)} milliseconds...`);
