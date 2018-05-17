@@ -29,6 +29,16 @@ And it will start the import right away (**I mean it**, it will start as soon as
 $ npm start stash
 ```
 
+## `Recreate` index
+
+If you pass the `recreate` argument to `Vadoma`, like this:
+
+```bash
+$ npm start recreate
+```
+
+Vadoma will recreate the index and use the mappingData json to apply that config in the recreated index (if there is the mappingData option in the configuraion that is)
+
 ## Docker
 
 There is an image created for vadoma with docker. You can use it like this:
@@ -87,13 +97,27 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
     "list" : "MyList"
   },
   "elastic" : {
-    "url" : "http://localhost:9200/myindex/doc",
+    "url" : "http://localhost:9200",
+    "index": "marcolegal2",
     "username" : "elastic",
     "password" : "changeme"
   },
-  "stash" : {
-    "fields" : "Created,Modified",
-    "timeout" : 15000
+  "mappingData" : {
+    "properties": {
+      "Description": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          },
+          "folded": {
+            "type": "text",
+            "analyzer": "folding"
+          }
+        }
+      }
+    }
   }
 }
 ```
@@ -102,11 +126,13 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
 - **sharepoint.username** : The username for basic authentication on your sharepoint
 - **sharepoint.password** : The password for basic authentication on your sharepoint
 - **sharepoint.list** : The name of the sharepoint list you want to import
-- **elastic.url** : The url of your elasticsearch endpoint to use for the import (must include the index and type)
+- **elastic.url** : The url of your elasticsearch endpoint to use for the import
+- **elastic.index** : The name of the index in the elastisearch to use
 - **elastic.username** : The username of your elasticsearch for authentication
 - **elastic.password** : The password of your elasticsearch for authentication
 - **stash.fields** : Used for the `stash` mode. The Datetime fields separated by commas used to check for new items in the list
 - **stash.timeout** : Used for the `stash` mode. The time used for the interval to check for new items in the list
+- **mappingData** : Used when the **recreate** option is passed as argument. Apply this mappingData to the index after the recreation. Here you can add personalized attributes if needed
 
 ### Environment variables
 
@@ -121,10 +147,12 @@ So the list of variables that replaces its corresponding configuration is:
 | SHAREPOINT_PASSWORD 	| sharepoint.password 	|
 | SHAREPOINT_LIST     	| sharepoint.list     	|
 | ELASTIC_URL         	| elastic.url         	|
+| ELASTIC_INDEX        	| elastic.index        	|
 | ELASTIC_USERNAME    	| elastic.username    	|
 | ELASTIC_PASSWORD    	| elastic.password    	|
 | STASH_FIELDS         	| stash.fields        	|
 | STASH_TIMEOUT       	| stash.timeout       	|
+| MAPPING_DATA       	  | stash.mappingData    	|
 
 ## FAQ
 
