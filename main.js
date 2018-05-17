@@ -34,6 +34,8 @@ async function processData(url, fieldsData) {
 
         if(body && body.d && body.d.results && body.d.results.length > 0) {
 
+            console.log(`Results found. Indexing IDs: ${body.d.results.map(e => { return e.ID; })}`);
+
             if(process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("repeat")) {
                 console.log('Results found. Importing...');
                 body.d.results.forEach(e => {
@@ -49,8 +51,6 @@ async function processData(url, fieldsData) {
                 bulkData += `{ "index" : { } }\n`;
                 bulkData += `${JSON.stringify(result)}\n`; 
             });
-
-            bulkData;
 
             requestPromise({
                 url: `${config.elastic.url}/${config.elastic.index}/doc/_bulk`,
@@ -142,7 +142,7 @@ async function main() {
         console.log(`Consulting for new data in ${config.sharepoint.list} list every ${chalk.cyan(config.stash.timeout)} milliseconds...`);
         setInterval(function() {
             fieldsData.forEach(data => {
-                processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${data.field}+ge+datetime'${data.lastDate}'`, fieldsData);
+                processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${data.field}+gt+datetime'${data.lastDate}'`, fieldsData);
             });
         },  config.stash.timeout);
     } else {
