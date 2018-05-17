@@ -136,6 +136,8 @@ objects:
             value: ${SHAREPOINT_LIST}
           - name: ELASTIC_URL
             value: ${ELASTIC_URL}
+          - name: ELASTIC_INDEX
+            value: ${ELASTIC_INDEX}
           - name: ELASTIC_USERNAME
             value: ${ELASTIC_USERNAME}
           - name: ELASTIC_PASSWORD
@@ -144,6 +146,8 @@ objects:
             value: ${STASH_FIELDS}
           - name: STASH_TIMEOUT
             value: ${STASH_TIMEOUT}
+          - name: MAPPING_DATA
+            value: ${MAPPING_DATA}
           - name: NPM_RUN
             value: start stash
           imagePullPolicy: Always
@@ -183,6 +187,9 @@ parameters:
 - name: ELASTIC_URL
   value: 'http://localhost:9200/myindex/doc'
   description: 'The url of your elasticsearch endpoint to use for the import (must include the index and type)'
+- name: ELASTIC_INDEX
+  value: 'marcolegal2'
+  description: 'The name of the index in the elastisearch to use'
 - name: ELASTIC_USERNAME
   value: 'elastic'
   description: 'The username of your elasticsearch for authentication'
@@ -195,3 +202,16 @@ parameters:
 - name: STASH_TIMEOUT
   value: '15000'
   description: 'Used for the stash mode. The time used for the interval to check for new items in the list'
+- name: MAPPING_DATA
+  value: >-
+                "properties": {       "Descripcion": {         "type":
+                "text",         "fields": {           "keyword": {            
+                "type": "keyword",             "ignore_above": 256          
+                },           "folded": {             "type": "text",            
+                "analyzer": "folding"           }         }       },      
+                "Titulo":  {         "type": "text",         "fields": 
+                {           "keyword": {             "type":
+                "keyword",             "ignore_above": 256          
+                },           "folded": {             "type": "text",            
+                "analyzer": "folding"           }         }       }     }
+  description: 'Used when the **recreate** option is passed as argument. Apply this mappingData to the index after the recreation. Here you can add personalized attributes if needed'
