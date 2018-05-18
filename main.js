@@ -50,7 +50,7 @@ async function processData(url, fieldsData) {
             var bulkData = '';
 
             body.d.results.forEach(result => {
-                bulkData += `{ "index" : { } }\n`;
+                bulkData += `{ "index" : { "_id" : ${result.ID} } }\n`;
                 bulkData += `${JSON.stringify(result)}\n`; 
             });
 
@@ -152,9 +152,12 @@ async function main() {
 
         console.log(`Consulting for new data in ${config.sharepoint.list} list every ${chalk.cyan(config.stash.timeout)} milliseconds...`);
         setInterval(function() {
+            var filters = '';
             fieldsData.forEach(data => {
-                processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${data.field}+gt+datetime'${data.lastDate}'`, fieldsData);
+                filters += `${data.field}+gt+datetime'${data.lastDate}'+or+`;
             });
+            filters = filters.slice(0,-4);
+            processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${filters}`, fieldsData);
         },  config.stash.timeout);
     } else {
         processData();
