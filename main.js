@@ -45,7 +45,7 @@ async function processData(url, fieldsData) {
                 });
             }
 
-            // Elasticsearch doesn't get along wiht Array data, so the results are splitted and sended using the _bulk API
+            // Elasticsearch doesn't get along wiht Array data, so the results are splitted and send using the _bulk API
 
             var bulkData = '';
 
