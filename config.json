@@ -11,6 +11,10 @@
     "username" : "elastic",
     "password" : "changeme"
   },
+  "stash" : {
+    "fields" : "Created,Modified",
+    "timeout" : 15000
+  },
   "coalesce": [
     {
       "list": "Cats",
@@ -24,10 +28,6 @@
       "field": "Name"
     }
   ],
-  "stash" : {
-    "fields" : "Created,Modified",
-    "timeout" : 15000
-  },
   "mappingData" : {
     "properties": {
       "Descripcion": {
