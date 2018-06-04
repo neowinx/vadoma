@@ -102,6 +102,23 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
     "username" : "elastic",
     "password" : "changeme"
   },
+  "stash" : {
+    "fields" : "Created,Modified",
+    "timeout" : 15000
+  },
+  "coalesce": [
+    {
+      "list": "Cats",
+      "joinOrigin": "ID",
+      "joinTarget": "cat_id",
+      "field": "Name"
+    },{
+      "list": "Dogs",
+      "joinOrigin": "ID",
+      "joinTarget": "Dog_ID",
+      "field": "Name"
+    }
+  ],
   "mappingData" : {
     "properties": {
       "Description": {
@@ -132,6 +149,7 @@ The _config.json_ is (as you may have guessed) a straightforward json file with 
 - **elastic.password** : The password of your elasticsearch for authentication
 - **stash.fields** : Used for the `stash` mode. The Datetime fields separated by commas used to check for new items in the list
 - **stash.timeout** : Used for the `stash` mode. The time used for the interval to check for new items in the list
+- **coalesce** : This list contains information that vadoma can use in order to add fields from another lists to the resulset
 - **mappingData** : Used when the **recreate** option is passed as argument. Apply this mappingData to the index after the recreation. Here you can add personalized attributes if needed
 
 ### Environment variables
@@ -152,7 +170,40 @@ So the list of variables that replaces its corresponding configuration is:
 | ELASTIC_PASSWORD    	| elastic.password    	|
 | STASH_FIELDS         	| stash.fields        	|
 | STASH_TIMEOUT       	| stash.timeout       	|
-| MAPPING_DATA       	  | stash.mappingData    	|
+| COALESCE              | coalesce              |
+| MAPPING_DATA       	| stash.mappingData    	|
+
+### Coalesce configuration
+
+The coalesce option is used by **Vadoma** in order to import related data to the index, from other indexes.
+
+For example, lets say you have a field `TableID` that references the `ID` field of a `Tables` lists inside another Sharepoint instance
+and you want to import the `Description` field of `Tables` along with its corresonding `ID` in the resulset of the index 
+
+So a valid configuration to get the tabe names when importing the data inside Elasticsearch is setting the coalesce value like this:
+
+```json
+  "coalesce": [
+    {
+      "url": "http://myothersharepoint:8080",
+      "username": "myotherusername",
+      "password": "myotherpassword",
+      "list": "Table",
+      "joinOrigin": "ID",
+      "joinTarget": "TableID",
+      "field": "Description"
+    }
+  ]
+```
+
+Note: These fields
+
+      "url": "http://myothersharepoint:8080",
+      "username": "myotherusername",
+      "password": "myotherpassword",
+
+are optional and can be ommited. The values of each one will be taken from the corresponding vaule in the `sharepoint`
+config key inside `config.json`
 
 ## FAQ
 
