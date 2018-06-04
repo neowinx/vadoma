@@ -82,7 +82,7 @@ $ oc login -u system:admin
 $ oc create -f vadoma.yml
 ```
 
-![Vadoma Template on Openshift](doc/images/openshift.gif)
+![Vadoma Template on Openshift](https://github.com/neowinx/vadoma/raw/master/doc/images/openshift.gif)
 
 ## Configuration
 
