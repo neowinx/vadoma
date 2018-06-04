@@ -188,7 +188,7 @@ parameters:
   value: 'http://localhost:9200/myindex/doc'
   description: 'The url of your elasticsearch endpoint to use for the import (must include the index and type)'
 - name: ELASTIC_INDEX
-  value: 'marcolegal2'
+  value: 'myindex'
   description: 'The name of the index in the elastisearch to use'
 - name: ELASTIC_USERNAME
   value: 'elastic'
