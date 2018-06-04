@@ -177,10 +177,11 @@ So the list of variables that replaces its corresponding configuration is:
 
 The coalesce option is used by **Vadoma** in order to import related data to the index, from other indexes.
 
-For example, lets say you have a field `TableID` that references the `ID` field of a `Tables` lists inside another Sharepoint instance
-and you want to import the `Description` field of `Tables` along with its corresonding `ID` in the resulset of the index 
+For example, lets say you have a field `TableID` that references the `ID` field of a `Tables` lists inside another 
+Sharepoint instance (lets say `http://myothersharepoint:8080` for example) and you want to import the `Description` 
+field of `Tables` from the referencing `TableID` in the resulset of the index 
 
-So a valid configuration to get the tabe names when importing the data inside Elasticsearch is setting the coalesce value like this:
+So, a valid configuration to achieve that is setting the coalesce value like this:
 
 ```json
   "coalesce": [
@@ -195,6 +196,9 @@ So a valid configuration to get the tabe names when importing the data inside El
     }
   ]
 ```
+
+Every `Description` value will be added to the resulset in the format `Table`.`Description` in the resulset before sending
+it to elasticsearch
 
 Note: These fields
 
