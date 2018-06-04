@@ -11,6 +11,19 @@
     "username" : "elastic",
     "password" : "changeme"
   },
+  "coalesce": [
+    {
+      "list": "Cats",
+      "joinOrigin": "ID",
+      "joinTarget": "cat_id",
+      "field": "Name"
+    },{
+      "list": "Dogs",
+      "joinOrigin": "ID",
+      "joinTarget": "Dog_ID",
+      "field": "Name"
+    }
+  ],
   "stash" : {
     "fields" : "Created,Modified",
     "timeout" : 15000

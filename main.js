@@ -1,6 +1,5 @@
 const pristineConfig = require('./config');
 const overrides = require('./overrides');
-
 const config = overrides(pristineConfig);
 
 const requestPromise = require('request-promise');
@@ -8,7 +7,8 @@ const moment = require('moment');
 const base64 = require('js-base64').Base64;
 const chalk = require('chalk');
 
-const stashMode = process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("stash");
+const sharepoint = require('./sharepoint');
+const elastic = require('./elastic');
 
 const sharepointHeader = {
     'Authorization': `Basic ${base64.encode(`${config.sharepoint.username}:${config.sharepoint.password}`)}`,
@@ -19,109 +19,37 @@ const elasticHeader = {
     'Authorization': `Basic ${base64.encode(`${config.elastic.username}:${config.elastic.password}`)}`
 };
 
-async function processData(url, fieldsData) {
-    if(!url) {
-        url = `${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items`
-    }
+let stashMode = process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("stash");
 
-    try {
+let coalesceLists = {};
 
-        let body = await requestPromise({
-            url: url, 
-            headers: sharepointHeader,
-            json: true
-        }).catch(e => { 
-            console.log(`Error requesting results. We will continuing trying though. ${e}`);
-         });
+// pre-process the coalesce lists before the import
+if(config.coalesce) {
+  console.log(`Coalesce configuration found. Precaching lists data...`);
+  let coalesceConfig = Array.isArray(config.coalesce) ? config.coalesce : JSON.parse(config.coalesce);
+  coalesceConfig.forEach(coalesceConf => {
+    coalesceLists[coalesceConf.list] = [];
+    let url = coalesceConf.url ? coalesceConf.url : config.sharepoint.url;
+    let username = coalesceConf.username ? coalesceConf.username : config.sharepoint.username;
+    let password = coalesceConf.password ? coalesceConf.password : config.sharepoint.password;
+    let header = {
+      'Authorization': `Basic ${base64.encode(`${username}:${password}`)}`,
+      'Accept': 'application/json;odata=verbose'
+    };
 
-        if(body && body.d && body.d.results && body.d.results.length > 0) {
-
-            console.log(`Results found. Indexing IDs: ${body.d.results.map(e => { return e.ID; })}`);
-
-            if(process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("repeat")) {
-                console.log('Results found. Importing...');
-                body.d.results.forEach(e => {
-                    console.log(e);
-                });
-            }
-
-            // Elasticsearch doesn't get along wiht Array data, so the results are splitted and send using the _bulk API
-
-            var bulkData = '';
-
-            body.d.results.forEach(result => {
-                bulkData += `{ "index" : { "_id" : ${result.ID} } }\n`;
-                bulkData += `${JSON.stringify(result)}\n`; 
-            });
-
-            requestPromise({
-                url: `${config.elastic.url}/${config.elastic.index}/doc/_bulk`,
-                method: 'POST',
-                headers: { 'Authorization': elasticHeader['Authorization'], 'Content-type' : 'application/x-ndjson' },
-                body: bulkData
-            }).then( () => {
-                // If the request was successful and we are in stash mode, get the new lastDate of every config.stash.field
-                if(stashMode) {
-                    body.d.results.forEach(result => {
-                        fieldsData.forEach(data => {
-                            if(moment(data.lastDate).isBefore(moment(result[data.field]))) {
-                                data.lastDate = result[data.field];
-                            }
-                        });
-                    });
-                }
-            });
-    
-            if(body.d.__next) {
-                let nextUrl = body.d.__next;
-                console.log(`processing next page ${chalk.yellow(nextUrl)}`);
-                processData(nextUrl);
-            }
-        }
-
-    } catch(e) {
-        console.log(e);
-    }
+    sharepoint.traverse(
+      `${url}/_api/Web/Lists/GetByTitle('${coalesceConf.list}')/Items`,
+      header,
+      body => {
+        coalesceLists[coalesceConf.list] = coalesceLists[coalesceConf.list].concat(body.d.results);
+      });
+  });
 }
-
-function pad(number) {
-    let str = '' + number;
-    let pad = '00';
-  return pad.substring(0, pad.length - str.length) + str;
-}
-
-console.log(`Welcome to ${chalk.cyan('Vadoma')}`);
-console.log('Starting the import process...');
 
 async function main() {
     
     if(process && process.argv && process.argv.length > 0 && process.argv.slice(2).includes("recreate")) {
-        console.log(`${chalk.yellow('WARNING:')} Recreating index as per user request. THIS CANNOT BE UNDONE!`);
-        
-        console.log(`${chalk.cyan('Deleting')} index ${chalk.yellow(config.elastic.index)}...`);
-        await requestPromise({
-            method: 'DELETE',
-            url: `${config.elastic.url}/${config.elastic.index}`, 
-            headers: elasticHeader
-        }).catch(e => {
-            console.log(`Error deleting index. It is probably that it doesn't exist in the elastic search repo. Ignoring in the meantime...`);
-        });
-
-        console.log(`${chalk.cyan('Creating')} index ${chalk.yellow(config.elastic.index)}...`);
-        await requestPromise({ method: 'PUT',
-            url: `${config.elastic.url}/${config.elastic.index}`,
-            headers: elasticHeader,
-            body: { settings: { analysis: { analyzer: { folding: { tokenizer: 'standard', filter: [ 'lowercase', 'asciifolding' ] } } } } },
-        json: true });
-
-        if(config.mappingData) {
-            console.log(`Adding ${chalk.cyan('_mapping')} info to ${chalk.yellow('doc')} type from ${chalk.yellow('mappingData')}...`);
-            await requestPromise({ method: 'POST',
-            url: `${config.elastic.url}/${config.elastic.index}/_mapping/doc`,
-            headers: elasticHeader,
-            body: config.mappingData,
-        json: true });
-        }
+      await elastic.recreateIndex(elasticHeader);
     }
 
     if(stashMode) {
@@ -151,17 +79,25 @@ async function main() {
         }));
 
         console.log(`Consulting for new data in ${config.sharepoint.list} list every ${chalk.cyan(config.stash.timeout)} milliseconds...`);
-        setInterval(function() {
-            var filters = '';
-            fieldsData.forEach(data => {
-                filters += `${data.field}+gt+datetime'${data.lastDate}'+or+`;
-            });
-            filters = filters.slice(0,-4);
-            processData(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${filters}`, fieldsData);
+        setInterval(async function() {
+          var filters = '';
+          fieldsData.forEach(data => {
+              filters += `${data.field}+gt+datetime'${data.lastDate}'+or+`;
+          });
+          filters = filters.slice(0,-4);
+          sharepoint.traverse(
+            `${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items?$filter=${filters}`,
+            sharepointHeader,
+            body => { elastic.receive(body, elasticHeader, stashMode, coalesceLists, fieldsData) } );
         },  config.stash.timeout);
     } else {
-        processData();
+      sharepoint.traverse(`${config.sharepoint.url}/_api/Web/Lists/GetByTitle('${config.sharepoint.list}')/Items`, sharepointHeader, body => {
+          elastic.receive(body, elasticHeader, stashMode, coalesceLists)
+      });
     }
 }
+
+console.log(`Welcome to ${chalk.cyan('Vadoma')}`);
+console.log('Starting the import process...');
 
 main();

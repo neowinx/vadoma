@@ -12,12 +12,13 @@ let overrides = function(config) {
             "username" : process.env.ELASTIC_USERNAME || config.elastic.username,
             "password" : process.env.ELASTIC_PASSWORD || config.elastic.password
           },
+          "coalesce": process.env.COALESCE || config.coalesce,
           "stash" : {
             "fields" : process.env.STASH_FIELDS || config.stash.fields,
             "timeout" : process.env.STASH_TIMEOUT || config.stash.timeout
           },
           "mappingData" : process.env.MAPPING_DATA || config.mappingData
     };
-}
+};
 
 module.exports = overrides;
