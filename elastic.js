@@ -33,6 +33,8 @@ async function receiveFromSharepoint(body, elasticHeader, stashMode, coalesceLis
         });
         if(coalesceData) {
           result[`${cc.list}.${cc.field}`] = coalesceData[cc.field];
+        } else if(cc.addNull) {
+          result[`${cc.list}.${cc.field}`] = null;
         }
       });
     }

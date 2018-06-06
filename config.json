@@ -20,12 +20,14 @@
       "list": "Cats",
       "joinOrigin": "ID",
       "joinTarget": "cat_id",
-      "field": "Name"
+      "field": "Name",
+      "addNull": true
     },{
       "list": "Dogs",
       "joinOrigin": "ID",
       "joinTarget": "Dog_ID",
-      "field": "Name"
+      "field": "Name",
+      "addNull": true
     }
   ],
   "mappingData" : {
